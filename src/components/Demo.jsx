@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState} from 'react';
 import { copy, linkIcon, loader, tick } from '../assets';
 import { useLazyGetSummaryQuery } from '../services/article';
@@ -15,8 +13,10 @@ const Demo = () => {
 
     const [copied, setCopied] = useState("");
 
+
     const [getSummary, {error, isFetching}] = useLazyGetSummaryQuery();
 
+    // STORAGE ARCTICLE
     useEffect(() => {
         const artclieFromLocalStorage = JSON.parse(
             localStorage.getItem('articles')
@@ -26,6 +26,8 @@ if(artclieFromLocalStorage) {
 }
     },[])
 
+
+    //FESHING SUMMARY
     const handleSubmit = async (e) => {e.preventDefault();
          const {data } = await getSummary({ articleUrl: article.url });
 
@@ -40,7 +42,36 @@ if(artclieFromLocalStorage) {
         localStorage.setItem('articles', JSON.stringify(updatedAllArticles));
        }
     }
-      
+        // DELETE URL
+        // const handleDelete = (url) => {
+        //     localStorage.removeItem(url);
+          
+        //     const filtered = allArticles.filter((item) => item.url !== url);
+        //     setAllArticles(filtered);
+        //   }
+
+
+        const getAllArticlesFromLocalStorage = () => {
+            const articlesFromLocalStorage = localStorage.getItem('articles');
+        
+            if (articlesFromLocalStorage) {
+              setAllArticles(JSON.parse(articlesFromLocalStorage));
+            }
+          };
+        
+          useEffect(() => {
+            getAllArticlesFromLocalStorage();
+          }, []);
+        
+          const handleDelete = (url) => {
+            const filtered = allArticles.filter((item) => item.url !== url);
+            setAllArticles(filtered);
+            localStorage.setItem('articles', JSON.stringify(filtered));
+          };
+
+
+
+      //COPY URL
      const handleCopy = (copyUrl) => {
         setCopied(copyUrl);
         navigator.clipboard.writeText(copyUrl);
@@ -71,12 +102,12 @@ if(artclieFromLocalStorage) {
                 </button>
             </form>
 
-        { /*Browese URL Histrory */}
+        { /*Browse URL Histrory */}
 
         <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
-            {allArticles.map((item, index) => (
+            {allArticles.map((item, url) => (
                 <div 
-                key={`link-${index}`}
+                key={`link-${url}`}
                 onClick={() => setArticle(item)}
                 className="p-3 flex justify-start items-center flex-row bg-white border border-gray-200 gap-3 rounded-lg cursor-pointer"
                 >
@@ -88,9 +119,10 @@ if(artclieFromLocalStorage) {
                         />
                         </div>
                         <p className="flex-1 font-satoshi text-blue-700 font-medium text-sm truncate">
-                            {item.url}
+                            {item.url} 
+                            
                         </p>
-                    
+                        <div onClick={() => handleDelete(item.url)}>Supprimer</div>
                 </div>
             ))}
 
@@ -115,7 +147,7 @@ if(artclieFromLocalStorage) {
                        <h2 className="font-satoshi font-bold text-gray-600 text-xl">
                         Article <span className="blue_gradient">Summary</span>
                        </h2>
-                       <div className="summary_box">
+                       <div className="rounded-xl border border-gray-200 bg-white/20 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur p-4">
                         <p className="font-inter font-medium text-sm text-gray-700">
                             {article.summary}
                         </p>

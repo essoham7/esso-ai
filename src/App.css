@@ -32,7 +32,7 @@
 
 .main:after {
   content: "";
-  /* background-image: url("/src/assets/grid.svg"); */
+  background-image: url("/src/assets/grid.png");
   z-index: 1;
   position: absolute;
   width: 100%;
